@@ -8,13 +8,32 @@ class SignUp extends StatefulWidget {
   _SignUpState createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   final _form = GlobalKey<FormState>();
   String _userName;
   String _password;
   String _emailAdress;
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
+
+  AnimationController _animationController;
+  Animation<double> _animation;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = Tween(begin: 0.0, end: 0.08).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -25,8 +44,12 @@ class _SignUpState extends State<SignUp> {
 
   void _signUp() async {
     final _isValid = _form.currentState.validate();
-    if (!_isValid) return;
+    if (!_isValid) {
+      _animationController.forward();
+      return;
+    }
     _form.currentState.save();
+    _animationController.reverse();
     setState(
       () {
         _isLoading = true;
@@ -80,8 +103,12 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     final Size _screenSize = MediaQuery.of(context).size;
-    return Container(
-      transform: Matrix4.rotationZ(-0.05),
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (ctx, ch) => Container(
+        transform: Matrix4.rotationZ(_animation.value),
+        child: ch,
+      ),
       child: Card(
         margin: EdgeInsets.symmetric(
           horizontal: _screenSize.width * 0.3,
@@ -92,7 +119,7 @@ class _SignUpState extends State<SignUp> {
           double _formHeight = boxConstraints.maxHeight * 0.7;
           double _buttonHeight = boxConstraints.maxHeight * 0.13;
           return Container(
-            transform: Matrix4.rotationZ(0.03),
+            // transform: Matrix4.rotationZ(0.03),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,

@@ -26,9 +26,16 @@ class _ProductItemState extends State<ProductItem> {
               arguments: product.id,
             );
           },
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          //a temp photo to have fade animation on loading image
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder: AssetImage("assets/images/..."),
+              fit: BoxFit.cover,
+              image: NetworkImage(
+                product.imageUrl,
+              ),
+            ),
           ),
         ),
         footer: GridTileBar(

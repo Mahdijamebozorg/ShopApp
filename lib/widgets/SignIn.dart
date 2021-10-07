@@ -8,7 +8,7 @@ class SignIn extends StatefulWidget {
   _SignInState createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
   var _form = GlobalKey<FormState>();
   String _userName;
   String _password;
@@ -24,8 +24,12 @@ class _SignInState extends State<SignIn> {
 
   void _signIn() async {
     final _isValid = _form.currentState.validate();
-    if (!_isValid) return;
+    if (!_isValid) {
+      await _animationController.forward();
+      return;
+    }
     _form.currentState.save();
+    await _animationController.reverse();
     setState(
       () {
         _isLoading = true;
@@ -59,11 +63,35 @@ class _SignInState extends State<SignIn> {
 
   bool _isLoading = false;
 
+  AnimationController _animationController;
+  Animation<double> _animation;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: 300,
+      ),
+    );
+    _animation = Tween<double>(begin: 0.0, end: 0.08).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size _screenSize = MediaQuery.of(context).size;
-    return Container(
-      transform: Matrix4.rotationZ(0.05),
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (ctx, ch) => Container(
+        transform: Matrix4.rotationZ(_animation.value),
+        child: ch,
+      ),
       child: Card(
         margin: EdgeInsets.symmetric(
           horizontal: _screenSize.width * 0.3,
@@ -74,7 +102,7 @@ class _SignInState extends State<SignIn> {
           double _formHeight = boxConstraints.maxHeight * 0.7;
           double _buttonHeight = boxConstraints.maxHeight * 0.13;
           return Container(
-            transform: Matrix4.rotationZ(-0.03),
+            // transform: Matrix4.rotationZ(-0.03),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.end,

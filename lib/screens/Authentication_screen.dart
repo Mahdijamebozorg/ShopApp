@@ -35,7 +35,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 child: Text(
                   index == 0 ? "Sign up" : "Sign in",
                   style: TextStyle(
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ),

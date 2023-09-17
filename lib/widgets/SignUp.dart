@@ -10,14 +10,14 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   final _form = GlobalKey<FormState>();
-  String _userName;
-  String _password;
-  String _emailAdress;
+  String _userName = "";
+  String _password = "";
+  String _emailAdress = "";
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
 
-  AnimationController _animationController;
-  Animation<double> _animation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -43,12 +43,12 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   }
 
   void _signUp() async {
-    final _isValid = _form.currentState.validate();
+    final _isValid = _form.currentState!.validate();
     if (!_isValid) {
       _animationController.forward();
       return;
     }
-    _form.currentState.save();
+    _form.currentState!.save();
     _animationController.reverse();
     setState(
       () {
@@ -66,7 +66,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Error"),
-          content: Text(response.error.message),
+          content: Text(response.error!.message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -152,13 +152,13 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                             ),
                             textInputAction: TextInputAction.next,
                             validator: (value) {
-                              if (value.isEmpty)
+                              if (value == null || value.isEmpty)
                                 return "Enter a valid email";
                               else
                                 return null;
                             },
                             onSaved: (value) {
-                              _emailAdress = value;
+                              _emailAdress = value!;
                             },
                             onFieldSubmitted: (_) => FocusScope.of(context)
                                 .requestFocus(_usernameFocusNode),
@@ -181,13 +181,13 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                             ),
                             textInputAction: TextInputAction.next,
                             validator: (value) {
-                              if (value.isEmpty)
+                              if (value == null || value.isEmpty)
                                 return "Enter a valid username";
                               else
                                 return null;
                             },
                             onSaved: (value) {
-                              _userName = value;
+                              _userName = value!;
                             },
                             focusNode: _usernameFocusNode,
                             onFieldSubmitted: (_) => FocusScope.of(context)
@@ -212,13 +212,13 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                             ),
                             textInputAction: TextInputAction.done,
                             validator: (value) {
-                              if (value.isEmpty)
+                              if (value == null || value.isEmpty)
                                 return "Enter a valid password";
                               else
                                 return null;
                             },
                             onSaved: (value) {
-                              _password = value;
+                              _password = value!;
                             },
                             focusNode: _passwordFocusNode,
                             onFieldSubmitted: (_) => _signUp(),
@@ -239,7 +239,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                     onPressed: () => _signUp(),
                     child: _isLoading
                         ? CircularProgressIndicator(
-                            color: Theme.of(context).accentColor)
+                            color: Theme.of(context).colorScheme.secondary)
                         : Text(
                             "Sign up",
                             style: TextStyle(fontSize: _buttonHeight * 0.3),

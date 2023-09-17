@@ -10,8 +10,8 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
   var _form = GlobalKey<FormState>();
-  String _userName;
-  String _password;
+  String _userName = "";
+  String _password = "";
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
 
@@ -23,12 +23,12 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
   }
 
   void _signIn() async {
-    final _isValid = _form.currentState.validate();
+    final _isValid = _form.currentState!.validate();
     if (!_isValid) {
       await _animationController.forward();
       return;
     }
-    _form.currentState.save();
+    _form.currentState!.save();
     await _animationController.reverse();
     setState(
       () {
@@ -44,7 +44,7 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Error"),
-          content: Text(response.error.message),
+          content: Text(response.error!.message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -63,8 +63,8 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
 
   bool _isLoading = false;
 
-  AnimationController _animationController;
-  Animation<double> _animation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -135,13 +135,13 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
                             ),
                             textInputAction: TextInputAction.next,
                             validator: (value) {
-                              if (value.isEmpty)
+                              if (value == null || value.isEmpty)
                                 return "Enter a valid username";
                               else
                                 return null;
                             },
                             onSaved: (value) {
-                              _userName = value;
+                              _userName = value!;
                             },
                             focusNode: _usernameFocusNode,
                             onFieldSubmitted: (_) => FocusScope.of(context)
@@ -166,13 +166,13 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
                             ),
                             textInputAction: TextInputAction.done,
                             validator: (value) {
-                              if (value.isEmpty)
+                              if (value == null || value.isEmpty)
                                 return "Enter a valid password";
                               else
                                 return null;
                             },
                             onSaved: (value) {
-                              _password = value;
+                              _password = value!;
                             },
                             focusNode: _passwordFocusNode,
                             onFieldSubmitted: (_) => _signIn(),
@@ -193,7 +193,7 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
                     onPressed: () => _signIn(),
                     child: _isLoading
                         ? CircularProgressIndicator(
-                            color: Theme.of(context).accentColor)
+                            color: Theme.of(context).colorScheme.secondary)
                         : Text(
                             "Sign in",
                             style: TextStyle(fontSize: _buttonHeight * 0.3),

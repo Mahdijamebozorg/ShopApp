@@ -8,35 +8,35 @@ class Auth with ChangeNotifier {
   final String parseServerUrl;
   final String applicationId;
   final String clientKey;
-  ParseUser _user;
-  String _userId;
-  DateTime _expireDate;
-  String _token;
-  String _userDataId;
+   ParseUser? _user;
+   String? _userId;
+   DateTime? _expireDate;
+   String? _token;
+   String? _userDataId;
 
   Auth(this.parseServerUrl, this.applicationId, this.clientKey);
 
   Future<ParseResponse> singUp({
-    @required String username,
-    @required String password,
-    @required String emailAddress,
+    required String username,
+    required String password,
+    required String emailAddress,
   }) async {
     _user = ParseUser(username, password, emailAddress);
 
-    return _user.signUp();
+    return _user!.signUp();
   }
 
   Future<ParseResponse> signIn({
-    @required String username,
-    @required String password,
+    required String username,
+    required String password,
   }) async {
     _user = ParseUser(username, password, null);
-    final ParseResponse response = await _user.login();
+    final ParseResponse response = await _user!.login();
     if (response.success) {
       _expireDate = DateTime.parse(response.result["createdAt"].toString())
           .add(Duration(days: 365));
       _token = response.result["sessionToken"];
-      this._userId = _user.objectId;
+      this._userId = _user!.objectId!;
       await Parse().initialize(
         applicationId,
         parseServerUrl,
@@ -54,11 +54,11 @@ class Auth with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
-          "username": _user.username,
-          "password": _user.password,
+          "username": _user!.username,
+          "password": _user!.password,
           "token": token,
           "userId": userId,
-          "expiryDate": _expireDate.toIso8601String(),
+          "expiryDate": _expireDate!.toIso8601String(),
           "userDataId": _userDataId,
         },
       );
@@ -70,7 +70,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<ParseResponse> logOut() async {
-    ParseUser tempUser = _user;
+    ParseUser tempUser = _user!;
     this._user = null;
     this._expireDate = null;
     notifyListeners();
@@ -85,10 +85,10 @@ class Auth with ChangeNotifier {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey("UserData")) return false;
 
-    final Map<String, Object> userData =
-        json.decode(prefs.getString("UserData")) as Map<String, Object>;
+    final Map<String, String> userData =
+        json.decode(prefs.getString("UserData")!) as Map<String, String>;
 
-    final exp = DateTime.parse(userData["expiryDate"]);
+    final exp = DateTime.parse(userData["expiryDate"]!);
 
     if (exp.isBefore(DateTime.now())) return false;
 
@@ -98,9 +98,9 @@ class Auth with ChangeNotifier {
     this._userId = userData["userId"];
     this._user =
         new ParseUser(userData["username"], userData["password"], null);
-    this._user.objectId = _userId;
+    this._user!.objectId = _userId;
     this._userDataId = userData["userDataId"];
-    this._expireDate = DateTime.parse(userData["expiryDate"]);
+    this._expireDate = DateTime.parse(userData["expiryDate"]!);
 
     await Parse().initialize(
       applicationId,
@@ -123,9 +123,9 @@ class Auth with ChangeNotifier {
 
     response.results = response.results ?? [];
 
-    for (var i = 0; i < response.results.length; i++) {
-      if (response.results[i]["UserId"] == this.userId) {
-        this._userDataId = response.results[i]["objectId"];
+    for (var i = 0; i < response.results!.length; i++) {
+      if (response.results![i]["UserId"] == this.userId) {
+        this._userDataId = response.results![i]["objectId"];
         notifyListeners();
         print("data id : $_userDataId");
         return;
@@ -148,19 +148,19 @@ class Auth with ChangeNotifier {
     if (_user == null)
       return false;
     else
-      return (_expireDate != null && _expireDate.isAfter(DateTime.now()));
+      return (_expireDate!.isAfter(DateTime.now()));
   }
 
-  String get token {
+  String? get token {
     return this._token;
   }
 
-  String get userId {
+  String? get userId {
     if (_user == null) return null;
     return this._userId;
   }
 
-  String get userDataId {
+  String? get userDataId {
     return this._userDataId;
   }
 }

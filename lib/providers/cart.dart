@@ -8,10 +8,10 @@ class CartItem {
   final double price;
 
   CartItem({
-    @required this.id,
-    @required this.title,
-    @required this.quantity,
-    @required this.price,
+    required this.id,
+    required this.title,
+    required this.quantity,
+    required this.price,
   });
 }
 
@@ -135,8 +135,8 @@ class Cart with ChangeNotifier {
     if (!_items.containsKey(productId)) {
       return;
     }
-    if (_items[productId].quantity > 1) {
-      CartItem existingCartItem = _items[productId];
+    if (_items[productId]!.quantity > 1) {
+      CartItem? existingCartItem = _items[productId];
       // _cartsOnServer.objectId = productId;
       // _cartsOnServer.set(
       //   "Data",

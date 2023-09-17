@@ -11,11 +11,11 @@ class OrderItem {
   // final String userDataId;
 
   OrderItem({
-    // @required this.id,
-    @required this.amount,
-    @required this.products,
-    @required this.dateTime,
-    // @required this.userDataId,
+    // required this.id,
+    required this.amount,
+    required this.products,
+    required this.dateTime,
+    // required this.userDataId,
   });
 }
 

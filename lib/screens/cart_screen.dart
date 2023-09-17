@@ -50,7 +50,7 @@ class _CartScreenState extends State<CartScreen> {
                     label: Text(
                       '\$${cart.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: Theme.of(context).primaryTextTheme.title.color,
+                        color: Theme.of(context).primaryTextTheme.titleLarge!.color,
                       ),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
@@ -81,8 +81,8 @@ class _CartScreenState extends State<CartScreen> {
 
 class OrderButton extends StatefulWidget {
   const OrderButton({
-    Key key,
-    @required this.cart,
+    Key? key,
+    required this.cart,
   }) : super(key: key);
 
   final Cart cart;
@@ -112,7 +112,7 @@ class _OrderButtonState extends State<OrderButton> {
           );
           await Provider.of<Orders>(context, listen: false).addOrder(
             widget.cart.items.values.toList(),
-            widget.cart.totalAmount.,
+            double.parse(widget.cart.totalAmount.toStringAsFixed(2)),
           );
           setState(
             () {

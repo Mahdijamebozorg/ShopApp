@@ -32,7 +32,7 @@ class Products with ChangeNotifier {
         final favsIDs = userData["Favorites"] ?? [];
 
         _items.clear();
-        data.results.forEach(
+        data.results!.forEach(
           (element) {
             Product prod = new Product(
               id: element["objectId"],
@@ -94,6 +94,7 @@ class Products with ChangeNotifier {
         imageUrl: product.imageUrl,
         userId: product.userId,
         id: response.result["objectId"],
+        userDataId: product.userDataId
       );
       _items.add(newProduct);
       notifyListeners();

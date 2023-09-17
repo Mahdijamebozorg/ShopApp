@@ -51,8 +51,8 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Products([], "", ""),
           update: (ctx, auth, previewsProducts) => Products(
               previewsProducts == null ? [] : previewsProducts.items,
-              auth.userId,
-              auth.userDataId),
+              auth.userId!,
+              auth.userDataId!),
         ),
         ChangeNotifierProvider(
           create: (_) => Cart(),
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: (ctx) => Orders("", []),
           update: (ctx, auth, presviews) => Orders(
-              auth.userDataId, presviews == null ? [] : presviews.orders),
+              auth.userDataId!, presviews == null ? [] : presviews.orders),
         ),
       ],
       child: Consumer<Auth>(
@@ -68,9 +68,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'MyShop',
           theme: ThemeData(
-            primarySwatch: Colors.purple,
-            accentColor: Colors.deepOrange,
-            fontFamily: 'Lato',
+            fontFamily: 'Lato', colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(secondary: Colors.deepOrange),
           ),
           // home: auth.isAuth ? ProductsOverviewScreen() : AuthenticationScreen(),
           // initialRoute: "/",

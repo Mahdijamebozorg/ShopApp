@@ -51,7 +51,7 @@ class _ProductItemState extends State<ProductItem> {
                           ? Icons.favorite
                           : Icons.favorite_border,
                     ),
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).colorScheme.secondary,
                     onPressed: () async {
                       setState(() {
                         _isLoading = true;
@@ -90,7 +90,7 @@ class _ProductItemState extends State<ProductItem> {
                 ),
               );
             },
-            color: Theme.of(context).accentColor,
+            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
       ),

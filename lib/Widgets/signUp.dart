@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/providers/Auth.dart';
+import 'package:shop_app/providers/Auth.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
+  const SignUp({Key? key}) : super(key: key);
+
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -13,8 +15,8 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   String _userName = "";
   String _password = "";
   String _emailAdress = "";
-  FocusNode _usernameFocusNode = FocusNode();
-  FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _usernameFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
 
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -22,7 +24,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _animation = Tween(begin: 0.0, end: 0.08).animate(
@@ -43,8 +45,8 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   }
 
   void _signUp() async {
-    final _isValid = _form.currentState!.validate();
-    if (!_isValid) {
+    final isValid = _form.currentState!.validate();
+    if (!isValid) {
       _animationController.forward();
       return;
     }
@@ -65,32 +67,33 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text("Error"),
+          title: const Text("Error"),
           content: Text(response.error!.message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("OK"),
+              child: const Text("OK"),
             )
           ],
         ),
       );
-    } else
+    } else {
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text("Success!"),
-          content: Text(
+          title: const Text("Success!"),
+          content: const Text(
             "User was successfully created, Please verify email address before Login",
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("OK"),
+              child: const Text("OK"),
             )
           ],
         ),
       );
+    }
     setState(
       () {
         _isLoading = false;
@@ -102,7 +105,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final Size _screenSize = MediaQuery.of(context).size;
+    final Size screenSize = MediaQuery.of(context).size;
     return AnimatedBuilder(
       animation: _animationController,
       builder: (ctx, ch) => Container(
@@ -111,13 +114,13 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
       ),
       child: Card(
         margin: EdgeInsets.symmetric(
-          horizontal: _screenSize.width * 0.3,
-          vertical: _screenSize.height * 0.2,
+          horizontal: screenSize.width * 0.3,
+          vertical: screenSize.height * 0.2,
         ),
         elevation: 20,
         child: LayoutBuilder(builder: (context, boxConstraints) {
-          double _formHeight = boxConstraints.maxHeight * 0.7;
-          double _buttonHeight = boxConstraints.maxHeight * 0.13;
+          double formHeight = boxConstraints.maxHeight * 0.7;
+          double buttonHeight = boxConstraints.maxHeight * 0.13;
           return Container(
             // transform: Matrix4.rotationZ(0.03),
             child: Column(
@@ -125,7 +128,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  height: _formHeight,
+                  height: formHeight,
                   // width: boxConstraints.maxWidth * 0.8,
                   margin: EdgeInsets.symmetric(
                     horizontal: boxConstraints.maxWidth * 0.05,
@@ -136,26 +139,27 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                     child: ListView(
                       children: [
                         //_________________________________ Email
-                        Container(
-                          height: _formHeight / 3,
+                        SizedBox(
+                          height: formHeight / 3,
                           child: TextFormField(
                             decoration: InputDecoration(
                               labelText: "Email address",
                               labelStyle: TextStyle(
-                                fontSize: _formHeight / 3 * 0.25,
+                                fontSize: formHeight / 3 * 0.25,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               errorStyle:
-                                  TextStyle(fontSize: _formHeight / 3 * 0.15),
+                                  TextStyle(fontSize: formHeight / 3 * 0.15),
                             ),
                             textInputAction: TextInputAction.next,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return "Enter a valid email";
-                              else
+                              } else {
                                 return null;
+                              }
                             },
                             onSaved: (value) {
                               _emailAdress = value!;
@@ -165,26 +169,27 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         //_________________________________ Username
-                        Container(
-                          height: _formHeight / 3,
+                        SizedBox(
+                          height: formHeight / 3,
                           child: TextFormField(
                             decoration: InputDecoration(
                               labelText: "Username",
                               labelStyle: TextStyle(
-                                fontSize: _formHeight / 3 * 0.25,
+                                fontSize: formHeight / 3 * 0.25,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               errorStyle:
-                                  TextStyle(fontSize: _formHeight / 3 * 0.15),
+                                  TextStyle(fontSize: formHeight / 3 * 0.15),
                             ),
                             textInputAction: TextInputAction.next,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return "Enter a valid username";
-                              else
+                              } else {
                                 return null;
+                              }
                             },
                             onSaved: (value) {
                               _userName = value!;
@@ -195,27 +200,28 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         //_________________________________ Password
-                        Container(
-                          height: _formHeight / 3,
+                        SizedBox(
+                          height: formHeight / 3,
                           child: TextFormField(
                             obscureText: true,
                             decoration: InputDecoration(
                               labelText: "Password",
                               labelStyle: TextStyle(
-                                fontSize: _formHeight / 3 * 0.25,
+                                fontSize: formHeight / 3 * 0.25,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               errorStyle:
-                                  TextStyle(fontSize: _formHeight / 3 * 0.15),
+                                  TextStyle(fontSize: formHeight / 3 * 0.15),
                             ),
                             textInputAction: TextInputAction.done,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return "Enter a valid password";
-                              else
+                              } else {
                                 return null;
+                              }
                             },
                             onSaved: (value) {
                               _password = value!;
@@ -231,9 +237,9 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                 SizedBox(
                   height: boxConstraints.maxHeight * 0.1,
                 ),
-                Container(
+                SizedBox(
                   // transform: Matrix4.rotationZ(-0.05),
-                  height: _buttonHeight,
+                  height: buttonHeight,
                   width: boxConstraints.maxWidth * 0.5,
                   child: ElevatedButton(
                     onPressed: () => _signUp(),
@@ -242,7 +248,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                             color: Theme.of(context).colorScheme.secondary)
                         : Text(
                             "Sign up",
-                            style: TextStyle(fontSize: _buttonHeight * 0.3),
+                            style: TextStyle(fontSize: buttonHeight * 0.3),
                           ),
                   ),
                 ),

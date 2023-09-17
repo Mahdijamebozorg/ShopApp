@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/widgets/SignIn.dart';
-import 'package:flutter_complete_guide/widgets/SignUp.dart';
+import 'package:shop_app/widgets/SignIn.dart';
+import 'package:shop_app/widgets/SignUp.dart';
 
 class AuthenticationScreen extends StatefulWidget {
   static const routeName = "/authentication";
+
+  const AuthenticationScreen({Key? key}) : super(key: key);
 
 
   @override
@@ -12,7 +14,7 @@ class AuthenticationScreen extends StatefulWidget {
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
   int index = 0;
-  List<Widget> page = [SignIn(), SignUp()];
+  List<Widget> page = [ SignIn(),  SignUp()];
 
   @override
   Widget build(BuildContext context) {

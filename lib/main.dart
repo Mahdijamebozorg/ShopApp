@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_complete_guide/providers/Auth.dart';
-import 'package:flutter_complete_guide/screens/Authentication_screen.dart';
-import 'package:flutter_complete_guide/screens/splash-screen.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
-import 'package:provider/provider.dart';
 
-import './screens/cart_screen.dart';
-import './screens/products_overview_screen.dart';
-import './screens/product_detail_screen.dart';
-import './providers/products.dart';
-import './providers/cart.dart';
-import './providers/orders.dart';
-import './screens/orders_screen.dart';
-import './screens/user_products_screen.dart';
-import './screens/edit_product_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:shop_app/Theme/theme.dart';
+
+import 'package:shop_app/Constants/urls.dart';
+import 'package:shop_app/Providers/bindings.dart';
+import 'package:shop_app/Providers/Auth.dart';
+import 'package:shop_app/screens/splash-screen.dart';
+import 'package:shop_app/screens/authentication_screen.dart';
+import 'package:shop_app/screens/products_overview_screen.dart';
 
 void main() async {
   //force portrait
@@ -22,81 +18,47 @@ void main() async {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  const String parseServerUrl = "https://parseapi.back4app.com";
-  const String applicationId = "5BtCJeNbypmMYuboAQtGR1yF1s5ZSynUmoltMq5M";
-  const String clientKey = "d3uN0RKn1Ndjz8qRlzk9UcsIobXSCMzuDWO5PS8X";
-  await new Parse().initialize(
-    applicationId,
-    parseServerUrl,
-    clientKey: clientKey,
+
+  await Parse().initialize(
+    Urls.applicationId,
+    Urls.parseServerUrl,
+    clientKey: Urls.clientKey,
     autoSendSessionId: true,
     debug: true,
   );
-  return runApp(MyApp(parseServerUrl, applicationId, clientKey));
+  return runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final String parseServerUrl;
-  final String applicationId;
-  final String clientKey;
-  MyApp(this.parseServerUrl, this.applicationId, this.clientKey);
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    // using provider
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => Auth(parseServerUrl, applicationId, clientKey),
+      providers: Bindings.providers,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'MyShop',
+        theme: AppTheme.theme,
+
+        // using auth to show main screen
+        home: Consumer<Auth>(
+          builder: (context, auth, _) => auth.isAuth
+              ?  ProductsOverviewScreen()
+              : FutureBuilder(
+                  // auto login
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, data) =>
+                      data.connectionState == ConnectionState.waiting
+                          ?  SplashScreen()
+                          :  AuthenticationScreen(),
+                ),
         ),
-        ChangeNotifierProxyProvider<Auth, Products>(
-          create: (ctx) => Products([], "", ""),
-          update: (ctx, auth, previewsProducts) => Products(
-              previewsProducts == null ? [] : previewsProducts.items,
-              auth.userId!,
-              auth.userDataId!),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => Cart(),
-        ),
-        ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (ctx) => Orders("", []),
-          update: (ctx, auth, presviews) => Orders(
-              auth.userDataId!, presviews == null ? [] : presviews.orders),
-        ),
-      ],
-      child: Consumer<Auth>(
-        builder: (context, auth, _) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'MyShop',
-          theme: ThemeData(
-            fontFamily: 'Lato', colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(secondary: Colors.deepOrange),
-          ),
-          // home: auth.isAuth ? ProductsOverviewScreen() : AuthenticationScreen(),
-          // initialRoute: "/",
-          routes: {
-            "/": (ctx) {
-              return auth.isAuth
-                  ? ProductsOverviewScreen()
-                  : FutureBuilder(
-                      future: auth.tryAutoLogin(),
-                      builder: (ctx, data) =>
-                          data.connectionState == ConnectionState.waiting
-                              ? SplashScreen()
-                              : AuthenticationScreen(),
-                    );
-            },
-            AuthenticationScreen.routeName: (ctx) => AuthenticationScreen(),
-            ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
-            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-            CartScreen.routeName: (ctx) => CartScreen(),
-            OrdersScreen.routeName: (ctx) => OrdersScreen(),
-            UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-            EditProductScreen.routeName: (ctx) => EditProductScreen(),
-          },
-          onUnknownRoute: (settings) {
-            return MaterialPageRoute(
-                builder: (ctx) => ProductsOverviewScreen());
-          },
-        ),
+        routes: Bindings.routes,
+        onUnknownRoute: (settings) {
+          return MaterialPageRoute(builder: (ctx) =>  ProductsOverviewScreen());
+        },
       ),
     );
   }

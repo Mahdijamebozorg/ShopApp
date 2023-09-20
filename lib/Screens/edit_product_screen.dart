@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/providers/Auth.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/product.dart';
-import '../providers/products.dart';
+import 'package:shop_app/Providers/auth.dart';
+import 'package:shop_app/Providers/product.dart';
+import 'package:shop_app/Providers/products.dart';
+
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
@@ -11,7 +12,7 @@ class EditProductScreen extends StatefulWidget {
   const EditProductScreen({Key? key}) : super(key: key);
 
   @override
-  _EditProductScreenState createState() => _EditProductScreenState();
+  State<EditProductScreen> createState() => _EditProductScreenState();
 }
 
 class _EditProductScreenState extends State<EditProductScreen> {
@@ -28,9 +29,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       price: 0,
       description: "",
       imageUrl: "",
-      userId: Provider.of<Auth>(context, listen: false).userId!,
-      userDataId: Provider.of<Auth>(context, listen: false).userDataId!,
-      // token: Provider.of<Auth>(context, listen: false).token,
+      userId: context.read<Auth>().userId!,
+      userDataId: context.read<Auth>().userDataId!,
+      // token: context.read<Auth>().token,
     );
   }
 
@@ -57,7 +58,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       final productId = ModalRoute.of(context)!.settings.arguments as String?;
       if (productId != null) {
         _editedProduct =
-            Provider.of<Products>(context, listen: false).findById(productId);
+            context.read<Products>().findById(productId);
         _initValues = {
           'title': _editedProduct!.title,
           'description': _editedProduct!.description,
@@ -110,7 +111,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     //_______________________________________ edit product
     if (_editedProduct!.id != "") {
       try {
-        await Provider.of<Products>(context, listen: false)
+        await context.read<Products>()
             .updateProduct(_editedProduct!.id, _editedProduct!)
             .then(
           (_) {
@@ -136,7 +137,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     //_______________________________________ new product
     else {
       try {
-        await Provider.of<Products>(context, listen: false)
+        await context.read<Products>()
             .addProduct(_editedProduct!)
             .then(
           (_) {

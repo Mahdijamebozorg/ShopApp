@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 import './cart.dart';
 
@@ -25,7 +25,7 @@ class Orders with ChangeNotifier {
   final String userDataId;
   Orders(this.userDataId, this._orders);
 
-  List<OrderItem> _orders = [];
+  final List<OrderItem> _orders;
 
   List<OrderItem> get orders {
     return [..._orders];

@@ -136,7 +136,7 @@ class Cart with ChangeNotifier {
       return;
     }
     if (_items[productId]!.quantity > 1) {
-      CartItem? existingCartItem = _items[productId];
+      // CartItem? existingCartItem = _items[productId];
       // _cartsOnServer.objectId = productId;
       // _cartsOnServer.set(
       //   "Data",

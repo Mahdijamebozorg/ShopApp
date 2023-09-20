@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/providers/products.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/app_drawer.dart';
-import '../widgets/products_grid.dart';
-import '../providers/cart.dart';
-import './cart_screen.dart';
+import 'package:shop_app/Providers/cart.dart';
+import 'package:shop_app/Screens/cart_screen.dart';
+import 'package:shop_app/Widgets/app_drawer.dart';
+import 'package:shop_app/Widgets/products_grid.dart';
+import 'package:shop_app/providers/products.dart';
+
 
 enum FilterOptions {
-  Favorites,
-  All,
+  favorites,
+  all,
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class ProductsOverviewScreen extends StatefulWidget {
   const ProductsOverviewScreen({Key? key}) : super(key: key);
 
   @override
-  _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
+  State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
@@ -33,7 +34,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           PopupMenuButton(
             onSelected: (FilterOptions selectedValue) {
               setState(() {
-                if (selectedValue == FilterOptions.Favorites) {
+                if (selectedValue == FilterOptions.favorites) {
                   _showOnlyFavorites = true;
                 } else {
                   _showOnlyFavorites = false;
@@ -45,11 +46,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ),
             itemBuilder: (_) => [
               const PopupMenuItem(
-                value: FilterOptions.Favorites,
+                value: FilterOptions.favorites,
                 child: Text('Only Favorites'),
               ),
               const PopupMenuItem(
-                value: FilterOptions.All,
+                value: FilterOptions.all,
                 child: Text('Show All'),
               ),
             ],
@@ -72,8 +73,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       ),
       drawer: AppDrawer(() {}),
       body: RefreshIndicator(
-        onRefresh: () => Provider.of<Products>(context, listen: false)
-            .getProductsFromServer(),
+        onRefresh: () => context.read<Products>().getProductsFromServer(),
         child: ProductsGrid(_showOnlyFavorites),
       ),
     );

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../providers/orders.dart' as ord;
+import 'package:shop_app/Providers/orders.dart' as ord;
 
 class OrderItem extends StatefulWidget {
   final ord.OrderItem order;
@@ -11,7 +11,7 @@ class OrderItem extends StatefulWidget {
   const OrderItem(this.order, {Key? key}) : super(key: key);
 
   @override
-  _OrderItemState createState() => _OrderItemState();
+  State<OrderItem> createState() => _OrderItemState();
 }
 
 class _OrderItemState extends State<OrderItem> {

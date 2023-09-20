@@ -1,7 +1,10 @@
-import 'package:shop_app/providers/Auth.dart';
-import 'package:shop_app/providers/cart.dart';
-import 'package:shop_app/providers/orders.dart';
-import 'package:shop_app/providers/products.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:shop_app/Providers/auth.dart';
+import 'package:shop_app/Providers/cart.dart';
+import 'package:shop_app/Providers/orders.dart';
+import 'package:shop_app/Providers/products.dart';
 import 'package:shop_app/screens/authentication_screen.dart';
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/edit_product_screen.dart';
@@ -9,23 +12,25 @@ import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
-import 'package:provider/provider.dart';
 
 class Bindings {
-  static final routes = {
-    AuthenticationScreen.routeName: (ctx) => AuthenticationScreen(),
-    ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
-    ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-    CartScreen.routeName: (ctx) => CartScreen(),
-    OrdersScreen.routeName: (ctx) => OrdersScreen(),
-    UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+  Bindings.of(this.ctx);
+  final BuildContext ctx;
+
+  final routes = {
+    AuthenticationScreen.routeName: (ctx) => const AuthenticationScreen(),
+    ProductsOverviewScreen.routeName: (ctx) => const ProductsOverviewScreen(),
+    ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
+    CartScreen.routeName: (ctx) => const CartScreen(),
+    OrdersScreen.routeName: (ctx) => const OrdersScreen(),
+    UserProductsScreen.routeName: (ctx) => const UserProductsScreen(),
     EditProductScreen.routeName: (ctx) => const EditProductScreen(),
   };
 
-  static final providers = [
+  final providers = [
     // auth
     ChangeNotifierProvider(
-      create: (_) => Auth(),
+      create: (ctx) => Auth(),
     ),
     // products
     ChangeNotifierProxyProvider<Auth, Products>(
@@ -37,7 +42,7 @@ class Bindings {
     ),
     // cart
     ChangeNotifierProvider(
-      create: (_) => Cart(),
+      create: (ctx) => Cart(),
     ),
     // orders
     ChangeNotifierProxyProvider<Auth, Orders>(

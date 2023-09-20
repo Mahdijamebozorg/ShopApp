@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/Providers/orders.dart' show Orders;
 
-import '../providers/orders.dart' show Orders;
-import '../widgets/order_item.dart';
-import '../widgets/app_drawer.dart';
+import 'package:shop_app/Widgets/app_drawer.dart';
+import 'package:shop_app/Widgets/order_item.dart';
+
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
@@ -11,7 +12,7 @@ class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key? key}) : super(key: key);
 
   @override
-  _OrdersScreenState createState() => _OrdersScreenState();
+  State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
@@ -19,7 +20,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   //cause we have providers, should use this method
   Future getOrders() {
-    return Provider.of<Orders>(context, listen: false).getOrdersFromServer();
+    return context.read<Orders>().getOrdersFromServer();
   }
 
   @override
@@ -30,7 +31,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context);
+    final orderData = context.watch<Orders>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Orders'),

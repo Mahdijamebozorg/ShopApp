@@ -1,9 +1,9 @@
 import 'dart:convert';
-
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constants/urls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class Auth with ChangeNotifier {
   final String parseServerUrl = Urls.parseServerUrl;
@@ -15,15 +15,12 @@ class Auth with ChangeNotifier {
   String? _token;
   String? _userDataId;
 
-  Auth();
-
   Future<ParseResponse> singUp({
     required String username,
     required String password,
     required String emailAddress,
   }) async {
     _user = ParseUser(username, password, emailAddress);
-
     return _user!.signUp();
   }
 
@@ -34,12 +31,18 @@ class Auth with ChangeNotifier {
     required String password,
   }) async {
     _user = ParseUser(username, password, null);
+    debugPrint("Signin in...");
     final ParseResponse response = await _user!.login();
     if (response.success) {
       _expireDate = DateTime.parse(response.result["createdAt"].toString())
           .add(const Duration(days: 365));
+
       _token = response.result["sessionToken"];
       _userId = _user!.objectId!;
+
+      log("user token: $_token");
+      log("user id: $_userId");
+
       await Parse().initialize(
         applicationId,
         parseServerUrl,
@@ -48,12 +51,12 @@ class Auth with ChangeNotifier {
         sessionId: _token,
         debug: true,
       );
-      debugPrint("user id in Auth: $userId");
 
       //checking userData
       await checkUserData();
 
       //save data in device
+      debugPrint("saving login data ...");
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
@@ -90,21 +93,28 @@ class Auth with ChangeNotifier {
   Future<bool> tryAutoLogin() async {
     debugPrint("trying auto login...");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey("UserData")) return false;
 
-    final Map<String, String> userData =
-        json.decode(prefs.getString("UserData")!) as Map<String, String>;
+    if (!prefs.containsKey("UserData")) {
+      log("no login data found!");
+      return false;
+    }
+
+    final userData =
+        json.decode(prefs.getString("UserData")!) as Map<String, dynamic>;
+
+    debugPrint("4");
+
+    log("login data: ${userData.toString()}");
 
     final exp = DateTime.parse(userData["expiryDate"]!);
-
-    if (exp.isBefore(DateTime.now())) return false;
-
-    debugPrint(userData.toString());
+    if (exp.isBefore(DateTime.now())) {
+      log("user is expired!");
+      return false;
+    }
 
     _token = userData["token"];
     _userId = userData["userId"];
-    _user =
-        ParseUser(userData["username"], userData["password"], null);
+    _user = ParseUser(userData["username"], userData["password"], null);
     _user!.objectId = _userId;
     _userDataId = userData["userDataId"];
     _expireDate = DateTime.parse(userData["expiryDate"]!);
@@ -125,6 +135,7 @@ class Auth with ChangeNotifier {
 //_____________________________________________________________________________
 
   Future<void> checkUserData() async {
+    debugPrint("checking user data...");
     ParseObject serverUsersData = ParseObject("UsersData");
     ParseResponse response = await serverUsersData.getAll();
 
@@ -134,7 +145,6 @@ class Auth with ChangeNotifier {
       if (response.results![i]["UserId"] == userId) {
         _userDataId = response.results![i]["objectId"];
         notifyListeners();
-        debugPrint("data id : $_userDataId");
         return;
       }
     }
@@ -143,6 +153,9 @@ class Auth with ChangeNotifier {
     serverUsersData.set("UserId", userId);
     final rsp = await serverUsersData.create();
     _userDataId = rsp.result["objectId"];
+
+    log("userDataId: $_userDataId");
+
     notifyListeners();
   }
 

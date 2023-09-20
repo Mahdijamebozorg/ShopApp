@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/providers/Auth.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/orders_screen.dart';
-import '../screens/user_products_screen.dart';
+import 'package:shop_app/Screens/orders_screen.dart';
+import 'package:shop_app/Screens/user_products_screen.dart';
+import 'package:shop_app/providers/Auth.dart';
+
 
 class AppDrawer extends StatelessWidget {
   final Function _logOut;
   const AppDrawer(this._logOut, {Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -48,8 +50,7 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Log out'),
             onTap: () async {
-              await Provider.of<Auth>(context, listen: false).logOut();
-              Navigator.of(context).pop();
+              await context.read<Auth>().logOut();
               _logOut("/");
             },
           ),

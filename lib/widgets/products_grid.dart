@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/Providers/products.dart';
+import 'package:shop_app/Widgets/product_item.dart';
 
-import '../providers/products.dart';
-import './product_item.dart';
 
 class ProductsGrid extends StatelessWidget {
   final bool showFavs;
@@ -13,7 +13,7 @@ class ProductsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future:
-          Provider.of<Products>(context, listen: false).getProductsFromServer(),
+          context.read<Products>().getProductsFromServer(),
       builder: (context, data) {
         if (data.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

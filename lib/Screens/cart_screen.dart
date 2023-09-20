@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart.dart' show Cart;
-import '../widgets/cart_item.dart';
-import '../providers/orders.dart';
+import 'package:shop_app/Providers/cart.dart' show Cart;
+import 'package:shop_app/Providers/orders.dart';
+import 'package:shop_app/Widgets/cart_item.dart';
+
+
 
 class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
@@ -11,7 +13,7 @@ class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   @override
-  _CartScreenState createState() => _CartScreenState();
+  State<CartScreen> createState() => _CartScreenState();
 }
 
 class _CartScreenState extends State<CartScreen> {
@@ -29,7 +31,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Cart cart = Provider.of<Cart>(context);
+    final Cart cart = context.watch<Cart>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
@@ -52,7 +54,10 @@ class _CartScreenState extends State<CartScreen> {
                     label: Text(
                       '\$${cart.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: Theme.of(context).primaryTextTheme.titleLarge!.color,
+                        color: Theme.of(context)
+                            .primaryTextTheme
+                            .titleLarge!
+                            .color,
                       ),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
@@ -90,7 +95,7 @@ class OrderButton extends StatefulWidget {
   final Cart cart;
 
   @override
-  _OrderButtonState createState() => _OrderButtonState();
+  State<OrderButton> createState() => _OrderButtonState();
 }
 
 class _OrderButtonState extends State<OrderButton> {
@@ -104,7 +109,9 @@ class _OrderButtonState extends State<OrderButton> {
           color: Theme.of(context).primaryColor,
         ),
       ),
-      child: _isLoading ? const CircularProgressIndicator() : const Text('ORDER NOW'),
+      child: _isLoading
+          ? const CircularProgressIndicator()
+          : const Text('ORDER NOW'),
       onPressed: () async {
         if (widget.cart.totalAmount > 0 && !_isLoading) {
           setState(
@@ -112,10 +119,10 @@ class _OrderButtonState extends State<OrderButton> {
               _isLoading = true;
             },
           );
-          await Provider.of<Orders>(context, listen: false).addOrder(
-            widget.cart.items.values.toList(),
-            double.parse(widget.cart.totalAmount.toStringAsFixed(2)),
-          );
+          await context.read<Orders>().addOrder(
+                widget.cart.items.values.toList(),
+                double.parse(widget.cart.totalAmount.toStringAsFixed(2)),
+              );
           setState(
             () {
               widget.cart.clear();

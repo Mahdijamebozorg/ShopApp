@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 import './product.dart';
 
@@ -10,18 +10,12 @@ class Products with ChangeNotifier {
   final String userId;
   final String userDataId;
 
-  Products(
-    this._items,
-    this.userId,
-    this.userDataId,
-  );
+  Products(this._items, this.userId, this.userDataId);
 
-  List<Product> _items = [];
+  final List<Product> _items;
   // var _showFavoritesOnly = false;
 
   Future getProductsFromServer() async {
-    debugPrint("*****user id in get products: $userId");
-    debugPrint("*****data id in get products: $userDataId");
     debugPrint("Getting Products from server...");
     try {
       final ParseResponse data = await _productsOnServer.getAll();

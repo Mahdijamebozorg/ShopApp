@@ -1,2 +1,2 @@
 # ShopApp
-a shop application writen in flutter, using parse-server hoting by back4app for backend.
+a shop application with FLutter, using Provider architecture and parse-server hoting by back4app for backend.

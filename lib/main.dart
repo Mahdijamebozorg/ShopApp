@@ -3,18 +3,14 @@ import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
-import 'package:shop_app/Providers/cart.dart';
-import 'package:shop_app/Providers/orders.dart';
-import 'package:shop_app/Providers/products.dart';
 
-import 'package:shop_app/Theme/theme.dart';
-
+import 'package:shop_app/View/Theme/theme.dart';
 import 'package:shop_app/Constants/urls.dart';
-import 'package:shop_app/Providers/bindings.dart';
-import 'package:shop_app/Providers/auth.dart';
-import 'package:shop_app/screens/splash_screen.dart';
-import 'package:shop_app/screens/authentication_screen.dart';
-import 'package:shop_app/screens/products_overview_screen.dart';
+import 'package:shop_app/Controller/bindings.dart';
+import 'package:shop_app/Controller/auth.dart';
+import 'package:shop_app/View/Screens/splash_screen.dart';
+import 'package:shop_app/View/Screens/authentication_screen.dart';
+import 'package:shop_app/View/Screens/products_overview_screen.dart';
 
 void main() async {
   //force portrait
@@ -22,7 +18,7 @@ void main() async {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-
+  // initialize bindings to take thme to parse initializer
   await Parse().initialize(
     Urls.applicationId,
     Urls.parseServerUrl,
@@ -30,6 +26,7 @@ void main() async {
     autoSendSessionId: true,
     debug: true,
   );
+
   return runApp(const ProviderBinding());
 }
 
@@ -40,30 +37,7 @@ class ProviderBinding extends StatelessWidget {
   Widget build(BuildContext context) {
     // using provider
     return MultiProvider(
-      providers: [
-        // auth
-        ChangeNotifierProvider(
-          create: (_) => Auth(),
-        ),
-        // products
-        ChangeNotifierProxyProvider<Auth, Products>(
-          create: (_) => Products([], "", ""),
-          update: (_, auth, previewsProducts) => Products(
-              previewsProducts == null ? [] : previewsProducts.items,
-              auth.userId!,
-              auth.userDataId!),
-        ),
-        // cart
-        ChangeNotifierProvider(
-          create: (_) => Cart(),
-        ),
-        // orders
-        ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (_) => Orders("", []),
-          update: (_, auth, presviews) => Orders(
-              auth.userDataId!, presviews == null ? [] : presviews.orders),
-        ),
-      ],
+      providers: Bindings.providers,
       child: const App(),
     );
   }
@@ -82,7 +56,7 @@ class App extends StatelessWidget {
       theme: AppTheme.theme,
 
       // using auth to show main screen
-      home: Consumer<Auth>(
+      home: Consumer<User>(
         builder: (context, auth, _) => auth.isAuth
             ? const ProductsOverviewScreen()
             : FutureBuilder(
@@ -94,7 +68,7 @@ class App extends StatelessWidget {
                         : const AuthenticationScreen(),
               ),
       ),
-      routes: Bindings.of(context).routes,
+      routes: Bindings.routes,
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
             builder: (ctx) => const ProductsOverviewScreen());

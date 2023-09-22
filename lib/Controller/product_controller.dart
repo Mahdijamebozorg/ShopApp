@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'package:shop_app/Model/product.dart';
@@ -6,21 +8,23 @@ class ProductController with ChangeNotifier {
   static final ParseObject _productsOnServer = ParseObject("Products");
   // static final ParseObject _userDataOnServer = ParseObject("UsersData");
 
-  final String userId;
-  final String userDataId;
-
-  ProductController(this._items, this._favItems, this.userId, this.userDataId);
-
+  final String _userId;
+  final String _userDataId;
   final List<Product> _items;
   final List<String> _favItems;
+  bool gotInits = false;
+
+  ProductController(
+      this._items, this._favItems, this._userId, this._userDataId);
 
   Future getProductsFromServer() async {
     debugPrint("Getting Products from server...");
     try {
       final ParseResponse data = await _productsOnServer.getAll();
+      log("product data: ${data.results.toString()}");
       if (data.results != null) {
         // final ParseResponse response =
-        //     await _userDataOnServer.getObject(userDataId);
+        //     await _userDataOnServer.getObject(_userDataId);
         // final userData = response.result ?? {};
         // final favsIDs = userData["Favorites"] ?? [];
 
@@ -44,6 +48,28 @@ class ProductController with ChangeNotifier {
       debugPrint("in getting products from server: ${error.toString()}");
       rethrow;
     }
+
+    // get favs only for the first time
+    debugPrint("Getting Favs from server...");
+    if (!gotInits) {
+      try {
+        ParseObject userDataOnServer = ParseObject("UsersData");
+        final ParseResponse response =
+            await userDataOnServer.getObject(_userDataId);
+        final userData = response.result ?? {};
+        log("favs: ${userData["Favorites"].toString()}");
+        if (userData["Favorites"] != null && userData["Favorites"].isNotEmpty) {
+          userData["Favorites"].forEach((element) {
+            _favItems.add(element.toString());
+          });
+        }
+      }
+      //cuostome error
+      catch (error) {
+        debugPrint("in getting favs from server: ${error.toString()}");
+        rethrow;
+      }
+    }
   }
 
   List<Product> getProduct({bool onlyFav = false}) {
@@ -66,19 +92,21 @@ class ProductController with ChangeNotifier {
     ParseObject userDataOnServer = ParseObject("UsersData");
 
     if (isFav(id)) {
+      _favItems.remove(id);
       userDataOnServer.setRemove("Favorites", id);
     } else {
+      _favItems.add(id);
       userDataOnServer.setAddUnique("Favorites", id);
     }
 
-    userDataOnServer.objectId = userDataId;
+    userDataOnServer.objectId = _userDataId;
     await userDataOnServer.save();
 
     notifyListeners();
   }
 
   List<Product> get userItems {
-    return _items.where((prod) => prod.userId == userId).toList();
+    return _items.where((prod) => prod.userId == _userId).toList();
   }
 
   Product findById(String id) {
@@ -100,13 +128,13 @@ class ProductController with ChangeNotifier {
       );
       ParseResponse response = await _productsOnServer.create();
       final newProduct = Product(
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          imageUrl: product.imageUrl,
-          userId: product.userId,
-          id: response.result["objectId"],
-          );
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        userId: product.userId,
+        id: response.result["objectId"],
+      );
       _items.add(newProduct);
       notifyListeners();
     } catch (error) {

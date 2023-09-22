@@ -67,7 +67,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
-      drawer: AppDrawer(() {}),
+      drawer: const AppDrawer(),
       // loading products
       body: FutureBuilder(
           future: products.getProductsFromServer(),

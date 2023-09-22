@@ -36,7 +36,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       appBar: AppBar(
         title: const Text('Your Orders'),
       ),
-      drawer: AppDrawer(Navigator.of(context).pushReplacementNamed),
+      drawer: const AppDrawer(),
       body: orderData.orders.isEmpty
           ? const Center(child: Text("You have no orders!"))
           : FutureBuilder(

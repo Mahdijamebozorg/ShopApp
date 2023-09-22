@@ -6,8 +6,6 @@ import 'package:shop_app/View/Screens/edit_product_screen.dart';
 import 'package:shop_app/View/Widgets/app_drawer.dart';
 import 'package:shop_app/View/Widgets/user_product_item.dart';
 
-
-
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
 
@@ -28,13 +26,14 @@ class UserProductsScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: AppDrawer(Navigator.of(context).pushReplacementNamed),
+      drawer: const AppDrawer(),
       body: productsData.userItems.isEmpty
           ? const Center(
               child: Text("You have no product yet!"),
             )
           : RefreshIndicator(
-              onRefresh: () => context.read<ProductController>().getProductsFromServer(),
+              onRefresh: () =>
+                  context.read<ProductController>().getProductsFromServer(),
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: ListView.builder(

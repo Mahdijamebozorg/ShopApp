@@ -1,9 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shop_app/Controller/product_controller.dart';
 import 'package:shop_app/View/Screens/edit_product_screen.dart';
-
 
 class UserProductItem extends StatelessWidget {
   final String id;
@@ -18,7 +18,7 @@ class UserProductItem extends StatelessWidget {
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(imageUrl),
+        backgroundImage: CachedNetworkImageProvider(imageUrl, cacheKey: id),
       ),
       trailing: SizedBox(
         width: 100,

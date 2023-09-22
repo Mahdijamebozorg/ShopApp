@@ -6,8 +6,7 @@ import 'package:shop_app/View/Screens/orders_screen.dart';
 import 'package:shop_app/View/Screens/user_products_screen.dart';
 
 class AppDrawer extends StatelessWidget {
-  final Function _logOut;
-  const AppDrawer(this._logOut, {Key? key}) : super(key: key);
+  const AppDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.shop),
             title: const Text('Shop'),
             onTap: () {
-              Navigator.of(context).pushReplacementNamed('/');
+              Navigator.of(context).pop();
             },
           ),
           const Divider(),
@@ -31,8 +30,7 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.payment),
             title: const Text('Orders'),
             onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(OrdersScreen.routeName);
+              Navigator.of(context).pushNamed(OrdersScreen.routeName);
             },
           ),
           const Divider(),
@@ -41,7 +39,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Manage Products'),
             onTap: () {
               Navigator.of(context)
-                  .pushReplacementNamed(UserProductsScreen.routeName);
+                  .pushNamed(UserProductsScreen.routeName);
             },
           ),
           const Divider(),
@@ -50,7 +48,16 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Log out'),
             onTap: () async {
               await context.read<User>().logOut();
-              _logOut("/");
+              if (context.mounted) Navigator.of(context).pop();
+            },
+          ),
+          const Divider(),
+          Expanded(child: Container()),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () async {
+              // TODO setting page
             },
           ),
         ],

@@ -1,14 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shop_app/Controller/product_controller.dart';
 
-
 class ProductDetailScreen extends StatelessWidget {
-  // final String title;
-  // final double price;
-
-  // ProductDetailScreen(this.title, this.price);
   static const routeName = '/product-detail';
 
   const ProductDetailScreen({Key? key}) : super(key: key);
@@ -38,8 +34,15 @@ class ProductDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 child: Hero(
                   tag: productId,
-                  child: Image.network(
-                    loadedProduct.imageUrl,
+                  child: CachedNetworkImage(
+                    cacheKey: loadedProduct.id,
+                    imageUrl: loadedProduct.imageUrl,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                     fit: BoxFit.cover,
                   ),
                 ),

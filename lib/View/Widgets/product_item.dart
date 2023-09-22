@@ -7,11 +7,18 @@ import 'package:shop_app/Controller/cart_controller.dart';
 import 'package:shop_app/Controller/product_controller.dart';
 import 'package:shop_app/View/Screens/product_detail_screen.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends StatefulWidget {
   const ProductItem({required this.product, Key? key}) : super(key: key);
 
   final Product product;
 
+  @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+bool isWating = false;
+
+class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
     final cart = context.read<CartController>();
@@ -21,21 +28,31 @@ class ProductItem extends StatelessWidget {
       child: GridTile(
         footer: GridTileBar(
           backgroundColor: Colors.black45,
-          leading: IconButton(
-            icon: Icon(
-              productCtrl.isFav(product.id)
-                  ? Icons.favorite
-                  : Icons.favorite_border,
-            ),
-            color: Theme.of(context).colorScheme.secondary,
-            onPressed: () => productCtrl.toggleFavoriteStatus(product.id),
-          ),
+          leading: isWating
+              ? const CircularProgressIndicator()
+              : IconButton(
+                  icon: Icon(
+                    productCtrl.isFav(widget.product.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                  color: Theme.of(context).colorScheme.secondary,
+                  onPressed: () async {
+                    setState(() {
+                      isWating = true;
+                    });
+                    await productCtrl.toggleFavoriteStatus(widget.product.id);
+                    setState(() {
+                      isWating = false;
+                    });
+                  },
+                ),
           subtitle: Text(
-            product.price.toString(),
+            widget.product.price.toString(),
             textAlign: TextAlign.center,
           ),
           title: Text(
-            product.title,
+            widget.product.title,
             textAlign: TextAlign.center,
           ),
           trailing: IconButton(
@@ -43,8 +60,9 @@ class ProductItem extends StatelessWidget {
               Icons.shopping_cart,
             ),
             onPressed: () {
-              debugPrint(product.id);
-              cart.addItem(product.id, product.price, product.title);
+              debugPrint(widget.product.id);
+              cart.addItem(widget.product.id, widget.product.price,
+                  widget.product.title);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -55,7 +73,7 @@ class ProductItem extends StatelessWidget {
                   action: SnackBarAction(
                     label: 'Undo',
                     onPressed: () {
-                      cart.removeSingleItem(product.id);
+                      cart.removeSingleItem(widget.product.id);
                     },
                   ),
                 ),
@@ -68,14 +86,15 @@ class ProductItem extends StatelessWidget {
           onTap: () {
             Navigator.of(context).pushNamed(
               ProductDetailScreen.routeName,
-              arguments: product.id,
+              arguments: widget.product.id,
             );
           },
           //a temp photo to have fade animation on loading image
           child: Hero(
-            tag: product.id,
+            tag: widget.product.id,
             child: CachedNetworkImage(
-              imageUrl: product.imageUrl,
+              cacheKey: widget.product.id,
+              imageUrl: widget.product.imageUrl,
               progressIndicatorBuilder: (context, url, downloadProgress) =>
                   CircularProgressIndicator(value: downloadProgress.progress),
               errorWidget: (context, url, error) => const Icon(Icons.error),

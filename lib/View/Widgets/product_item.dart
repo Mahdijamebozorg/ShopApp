@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/Model/product.dart';
@@ -73,12 +74,12 @@ class ProductItem extends StatelessWidget {
           //a temp photo to have fade animation on loading image
           child: Hero(
             tag: product.id,
-            child: FadeInImage(
-              placeholder: const AssetImage("assets/images/..."),
+            child: CachedNetworkImage(
+              imageUrl: product.imageUrl,
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
               fit: BoxFit.cover,
-              image: NetworkImage(
-                product.imageUrl,
-              ),
             ),
           ),
         ),
